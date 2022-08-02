@@ -1,0 +1,46 @@
+import React, { createContext, useContext } from "react";
+import { useProductReducer } from './reducers';
+
+const StoreContext = createContext();
+const { Provider } = StoreContext;
+
+const StoreProvider = ({ Value = [], ...props }) => {
+    const [state, dispatch] = useProductReducer({
+        products: [],
+        categories: [],
+        currentCategory: '',
+    });
+
+    // use this to confirm it works!
+    console.log(state);
+    return <Provider value={[state, dispatch]} {...props} />;
+};
+
+// With this function, StoreProvider, we instantiate our initial global state with the useProductReducer() function we created earlier. 
+// Because that wraps it around the useReducer() Hook from React, every time we run this useProductReducer() function, we receive the following two items in return:
+
+// state is the most up-to-date version of our global state object.
+
+// dispatch is the method we execute to update our state. It is specifically going to look for an action object passed in as its argument, as we'll soon see.
+
+// After the useProductReducer() completes and provides us with the new state and function to update state (e.g., dispatch), 
+// we then return the StoreContext's <Provider> component with our state object and dispatch the function provided as data for the value prop.
+
+// With all of this in place, the StoreProvider function isn't as much of a function as it is our own custom <Provider> component! That's why the parameters 
+// defined at the top, the value and ...props, are there. It's actually set up to accept props if it needs to, and it does!
+
+// The value prop is good to have included, as it opens us up to pass in more data for state if we need to. We don't actually need to in this app, but it makes this provider 
+// flexible. The other prop, or rather ...props, is in place to handle any other props the user may need. Namely, we'll need to use props.children, as this <StoreProvider> 
+// component will wrap all of our other components, making them children of it. If we didn't include {...props} in our returning <Provider> component, nothing on the page would be rendered!
+
+// This is a lot to take in, and it takes some developers years to grasp it and put it to use. But in short, what we did here was create our own functionality to manage state 
+// at a global level and make it available to all of our other components through a special <Provider> component. The last thing we need to do is create the custom function using the 
+// useContext() Hook to be used by the components that actually need the data our <StoreProvider> will be, well . . . providing!
+
+
+const useStoreContext = () => {
+    return useContext(StoreContext);
+  };
+
+
+export { StoreProvider, useStoreContext };
